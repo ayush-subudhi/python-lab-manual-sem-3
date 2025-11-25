@@ -1,0 +1,39 @@
+import re
+
+def validate_pan(pan):
+    """
+    Validates Indian PAN number using regex.
+    Format: AAAAA9999A
+    """
+    pattern = r'^[A-Z]{5}[0-9]{4}[A-Z]$'
+    if re.match(pattern, pan):
+        return True
+    return False
+
+def validate_email(email):
+    """
+    Validates email address using a regex pattern.
+    """
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if re.match(pattern, email):
+        return True
+    return False
+
+
+if __name__ == "__main__":
+
+    print("\n--- PAN Card Validation ---")
+    pan_number = input("Enter PAN card number: ").strip().upper()
+
+    if validate_pan(pan_number):
+        print(f"'{pan_number}' is a VALID PAN card number.\n")
+    else:
+        print(f"'{pan_number}' is an INVALID PAN card number.\n")
+
+    print("--- Email ID Validation ---")
+    email_id = input("Enter email ID: ").strip()
+
+    if validate_email(email_id):
+        print(f"'{email_id}' is a VALID email ID.")
+    else:
+        print(f"'{email_id}' is an INVALID email ID.")
