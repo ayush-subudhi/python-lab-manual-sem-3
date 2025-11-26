@@ -1,0 +1,19 @@
+import serial
+import time
+
+# Open serial port (COM port may vary)
+arduino = serial.Serial('COM3', 9600)   # Windows → COM3, COM4, etc.
+# arduino = serial.Serial('/dev/ttyUSB0', 9600)  # Linux
+# arduino = serial.Serial('/dev/ttyACM0', 9600)  # Raspberry Pi
+
+time.sleep(2)   # Wait for Arduino to reset
+
+# Message to send
+message = "Hello Arduino!"
+
+# Send data
+arduino.write(message.encode())
+
+print("Message sent:", message)
+
+arduino.close()
