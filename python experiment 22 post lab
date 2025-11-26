@@ -1,0 +1,130 @@
+import requests
+import json
+
+class JSONPlaceholderClient:
+    """
+    A simple client for interacting with the JSONPlaceholder API.
+    Base URL: https://jsonplaceholder.typicode.com
+    """
+    def __init__(self, base_url="https://jsonplaceholder.typicode.com"):
+        self.base_url = base_url
+       
+        self.session = requests.Session()
+
+    def _make_request(self, method, endpoint, **kwargs):
+        """
+        Internal method to handle the core request logic and error handling.
+        """
+        url = f"{self.base_url}{endpoint}"
+        
+        try:
+            response = self.session.request(method, url, **kwargs)
+            response.raise_for_status() 
+            
+            # Check if the response has content before trying to parse JSON
+            if response.content:
+                # Return the parsed JSON content
+                return response.json()
+            else:
+                # Return an empty dict for successful requests with no content (like 204)
+                return {} 
+
+        except requests.exceptions.HTTPError as errh:
+            print(f"HTTP Error: {errh}")
+        except requests.exceptions.ConnectionError as errc:
+            print(f"Error Connecting: {errc}")
+        except requests.exceptions.Timeout as errt:
+            print(f"Timeout Error: {errt}")
+        except requests.exceptions.RequestException as err:
+            print(f"An unexpected error occurred: {err}")
+        
+        # Return None if any exception occurred
+        return None
+
+    ## --- GET Request Methods --- ##
+
+    def get_posts(self):
+        """
+        Fetches all posts from the /posts endpoint (GET request).
+        """
+        print("-> Fetching all posts...")
+        return self._make_request("GET", "/posts")
+
+    def get_post_by_id(self, post_id):
+        """
+        Fetches a single post by its ID from the /posts/{id} endpoint (GET request).
+        """
+        print(f"-> Fetching post with ID: {post_id}...")
+        return self._make_request("GET", f"/posts/{post_id}")
+
+    ## --- POST Request Method --- ##
+
+    def create_post(self, title, body, user_id):
+        """
+        Creates a new post via the /posts endpoint (POST request).
+
+        Args:
+            title (str): The title of the new post.
+            body (str): The body content of the new post.
+            user_id (int): The ID of the user creating the post.
+
+        Returns:
+            dict: The data returned by the API (usually the created object 
+                  with a new 'id'), or None on failure.
+        """
+        print(f"-> Creating a new post for user_id: {user_id}...")
+        
+        # The payload to send in the request body
+        post_data = {
+            "title": title,
+            "body": body,
+            "userId": user_id,
+        }
+        
+        # When sending JSON data, use the `json` argument in requests
+        return self._make_request("POST", "/posts", json=post_data)
+
+# --- Example Usage ---
+
+if __name__ == '__main__':
+    # Initialize the client
+    client = JSONPlaceholderClient()
+    print("--- JSONPlaceholder Client Initialized ---")
+    
+    # 1. Test GET Request: Fetch all posts
+    all_posts = client.get_posts()
+    if all_posts:
+        print(f"✅ Successfully fetched {len(all_posts)} posts.")
+        # print(f"First post title: {all_posts[0].get('title')}")
+    else:
+        print("❌ Failed to fetch posts.")
+        
+    print("\n" + "="*40 + "\n")
+
+    # 2. Test GET Request: Fetch a specific post
+    post_id_to_fetch = 10
+    single_post = client.get_post_by_id(post_id_to_fetch)
+    if single_post:
+        print(f"✅ Successfully fetched post {post_id_to_fetch}.")
+        print(f"Title: **{single_post.get('title')}**")
+    else:
+        print(f"❌ Failed to fetch post {post_id_to_fetch}.")
+
+    print("\n" + "="*40 + "\n")
+
+    # 3. Test POST Request: Create a new post
+    new_post_data = client.create_post(
+        title="My Awesome New Post",
+        body="This is the content of my first API-created post!",
+        user_id=99
+    )
+    
+    if new_post_data:
+        print("✅ Successfully created a new post.")
+        print("--- Response Data ---")
+        # JSONPlaceholder typically returns the new object with an assigned ID
+        print(f"New Post ID: **{new_post_data.get('id')}**") 
+        print(f"User ID: {new_post_data.get('userId')}")
+        # print(json.dumps(new_post_data, indent=4))
+    else:
+        print("❌ Failed to create post.")
