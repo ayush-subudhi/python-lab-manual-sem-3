@@ -1,0 +1,23 @@
+import serial
+import time
+
+# Connect to Arduino
+arduino = serial.Serial('COM3', 9600)   # Change COM port if needed
+time.sleep(2)  # Allow Arduino to reset
+
+print("Type ON or OFF to control the LED. Type EXIT to stop.")
+
+while True:
+    command = input("Enter command: ").strip().upper()
+
+    if command == "EXIT":
+        print("Exiting...")
+        break
+
+    if command in ["ON", "OFF"]:
+        arduino.write(command.encode())
+        print(f"Sent: {command}")
+    else:
+        print("Invalid command! Use ON, OFF, or EXIT.")
+
+arduino.close()
