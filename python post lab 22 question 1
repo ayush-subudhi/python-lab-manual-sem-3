@@ -1,0 +1,12 @@
+import pandas as pd
+
+
+df = pd.DataFrame({
+'Name': ['Ayush', 'Ramesh', 'Sita'],
+'Age': [21, 22, 20],
+'Marks': [85.5, 90.0, 88.5]
+})
+
+
+print("Data types of each column:")
+print(df.dtypes)
