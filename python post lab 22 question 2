@@ -1,0 +1,9 @@
+import pandas as pd
+
+df = pd.DataFrame({
+    'Age': [20, 22, None, 24, None]
+})
+
+df['Age'] = df['Age'].fillna(df['Age'].mean())
+
+print(df)
